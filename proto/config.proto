@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package config;
+
+option go_package = "kastelo.dev/syncthing-autoacceptd/internal/config";
+
+message Configuration { repeated DevicePattern pattern = 1; }
+
+message DevicePattern {
+  repeated FolderPattern folder = 1;
+  repeated string accept_cidr = 2;
+}
+
+message FolderPattern {
+  string id = 1;
+  Mode mode = 2;
+  string path = 3;
+}
+
+enum Mode {
+  SENDRECEIVE = 0;
+  SENDONLY = 1;
+  RECEIVEONLY = 2;
+}
