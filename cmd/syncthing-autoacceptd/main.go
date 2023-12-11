@@ -22,10 +22,10 @@ import (
 var errMalformedEvent = errors.New("malformed event")
 
 type CLI struct {
-	Address string `short:"a" help:"Address of Syncthing API" default:"127.0.0.1:8384" env:"SYNCTHING_AUTOACCEPTD__ADDRESS"`
-	APIKey  string `short:"k" help:"Key for the Syncthing API" required:"true" env:"SYNCTHING_AUTOACCEPTD__API_KEY"`
-	Config  string `short:"c" type:"existingfile" help:"Path to autoacceptd.conf" default:"~/.config/syncthing-autoacceptd/autoacceptd.conf" env:"SYNCTHING_AUTOACCEPTD_CONFIG"`
-	Debug   bool   `short:"d" help:"Enable debug logging" env:"SYNCTHING_AUTOACCEPTD_DEBUG"`
+	Address  string `short:"a" help:"Address of Syncthing API" default:"127.0.0.1:8384" env:"SYNCTHING_AUTOACCEPTD_ADDRESS"`
+	APIKey   string `short:"k" help:"Key for the Syncthing API" required:"true" env:"SYNCTHING_AUTOACCEPTD_APIKEY"`
+	Patterns string `short:"p" type:"existingfile" help:"Path to patterns.conf" required:"true" env:"SYNCTHING_AUTOACCEPTD_PATTERNS_FILE"`
+	Debug    bool   `short:"d" help:"Enable debug logging" env:"SYNCTHING_AUTOACCEPTD_DEBUG"`
 }
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
 
 	// Read and validate config file
 	var patterns config.Configuration
-	bs, err := os.ReadFile(cli.Config)
+	bs, err := os.ReadFile(cli.Patterns)
 	if err != nil {
 		l.Error("Failed to read config", "error", err)
 		os.Exit(2)
