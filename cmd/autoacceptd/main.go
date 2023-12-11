@@ -7,17 +7,16 @@ import (
 	"os"
 	"runtime"
 
-	"google.golang.org/protobuf/encoding/prototext"
-	"kastelo.dev/syncthing-autoacceptd/internal/api"
-	"kastelo.dev/syncthing-autoacceptd/internal/build"
-	"kastelo.dev/syncthing-autoacceptd/internal/config"
-
 	"github.com/alecthomas/kong"
 	"github.com/lmittmann/tint"
 	"github.com/mattn/go-isatty"
 	stconfig "github.com/syncthing/syncthing/lib/config"
 	"github.com/syncthing/syncthing/lib/events"
 	"github.com/thejerf/suture/v4"
+	"google.golang.org/protobuf/encoding/prototext"
+	"kastelo.dev/syncthing-autoacceptd/internal/api"
+	"kastelo.dev/syncthing-autoacceptd/internal/build"
+	"kastelo.dev/syncthing-autoacceptd/internal/config"
 )
 
 var errMalformedEvent = errors.New("malformed event")
