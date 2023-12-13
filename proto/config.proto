@@ -9,16 +9,98 @@ message Configuration { repeated DevicePattern pattern = 1; }
 message DevicePattern {
   repeated FolderPattern folder = 1;
   repeated string accept_cidr = 2;
+  DeviceConfiguration settings = 3;
 }
 
 message FolderPattern {
   string id = 1;
-  Mode mode = 2;
-  string path = 3;
+  FolderConfiguration settings = 2;
 }
 
 enum Mode {
   SENDRECEIVE = 0;
   SENDONLY = 1;
   RECEIVEONLY = 2;
+}
+
+message DeviceConfiguration {
+  repeated string addresses = 3;
+  repeated string allowed_networks = 10;
+  bool auto_accept_folders = 11;
+  int32 max_send_kbps = 12;
+  int32 max_recv_kbps = 13;
+  int32 max_request_kib = 16;
+  int32 num_connections = 19;
+}
+
+message FolderConfiguration {
+  string label = 2;
+  string path = 4;
+  FolderType type = 5;
+  int32 rescan_interval_s = 7;
+  bool fs_watcher_disabled = 8;
+  double fs_watcher_delay_s = 9;
+  bool ignore_permissions = 10;
+  bool no_auto_normalize = 11;
+  Size min_disk_free = 12;
+  int32 copiers = 14;
+  int32 puller_max_pending_kib = 15;
+  int32 hashers = 16;
+  PullOrder order = 17;
+  bool ignore_delete = 18;
+  int32 scan_progress_interval_s = 19;
+  int32 puller_pause_s = 20;
+  int32 max_conflicts = 21;
+  bool disable_sparse_files = 22;
+  bool disable_temp_indexes = 23;
+  int32 weak_hash_threshold_pct = 25;
+  string marker_name = 26;
+  bool copy_ownership_from_parent = 27;
+  int32 mod_time_window_s = 28;
+  int32 max_concurrent_writes = 29;
+  bool disable_fsync = 30;
+  BlockPullOrder block_pull_order = 31;
+  CopyRangeMethod copy_range_method = 32;
+  bool case_sensitive_fs = 33;
+  bool follow_junctions = 34;
+  bool sync_ownership = 35;
+  bool send_ownership = 36;
+  bool sync_xattrs = 37;
+  bool send_xattrs = 38;
+}
+
+enum FolderType {
+  SEND_RECEIVE = 0;
+  SEND_ONLY = 1;
+  RECEIVE_ONLY = 2;
+  RECEIVE_ENCRYPTED = 3;
+}
+
+enum PullOrder {
+  PULL_RANDOM = 0;
+  PULL_ALPHABETIC = 1;
+  PULL_SMALLEST_FIRST = 2;
+  PULL_LARGEST_FIRST = 3;
+  PULL_OLDEST_FIRST = 4;
+  PULL_NEWEST_FIRST = 5;
+}
+
+enum BlockPullOrder {
+  BLOCKS_STANDARD = 0;
+  BLOCKS_RANDOM = 1;
+  BLOCKS_IN_ORDER = 2;
+}
+
+enum CopyRangeMethod {
+  COPY_RANGE_STANDARD = 0;
+  COPY_RANGE_IOCTL = 1;
+  COPY_RANGE_COPY_FILE_RANGE = 2;
+  COPY_RANGE_SEND_FILE = 3;
+  COPY_RANGE_DUPLICATE_EXTENTS = 4;
+  COPY_RANGE_ALL_WITH_FALLBACK = 5;
+}
+
+message Size {
+  double value = 1;
+  string unit = 2;
 }
