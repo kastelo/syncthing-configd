@@ -12,6 +12,7 @@ import (
 	"github.com/mattn/go-isatty"
 	stconfig "github.com/syncthing/syncthing/lib/config"
 	"github.com/syncthing/syncthing/lib/events"
+	stfs "github.com/syncthing/syncthing/lib/fs"
 	"github.com/thejerf/suture/v4"
 	"google.golang.org/protobuf/encoding/prototext"
 	"kastelo.dev/syncthing-autoacceptd/internal/api"
@@ -107,45 +108,85 @@ func main() {
 }
 
 func handleDeviceRejected(l *slog.Logger, st *api.API, data *deviceRejectedData, cfg *config.Configuration) error {
-	matched := false
 	addFolders := make([]stconfig.FolderConfiguration, 0)
+	var addDevice *stconfig.DeviceConfiguration
 	for _, pat := range cfg.Pattern {
 		if pat.MatchesAddress(data.address) {
-			matched = true
+			addDevice = &stconfig.DeviceConfiguration{
+				DeviceID:          data.device,
+				Name:              data.name,
+				Addresses:         pat.Settings.Addresses,
+				AllowedNetworks:   pat.Settings.AllowedNetworks,
+				AutoAcceptFolders: pat.Settings.AutoAcceptFolders,
+				MaxSendKbps:       int(pat.Settings.MaxSendKbps),
+				MaxRecvKbps:       int(pat.Settings.MaxRecvKbps),
+				MaxRequestKiB:     int(pat.Settings.MaxRequestKib),
+				RawNumConnections: int(pat.Settings.NumConnections),
+			}
+
 			for _, fld := range pat.Folder {
-				mode := stconfig.FolderTypeSendReceive
-				switch fld.Mode {
-				case config.Mode_SENDONLY:
-					mode = stconfig.FolderTypeSendOnly
-				case config.Mode_RECEIVEONLY:
-					mode = stconfig.FolderTypeReceiveOnly
+				settings := fld.Settings
+				if settings == nil {
+					settings = &config.FolderConfiguration{}
 				}
-				addFolders = append(addFolders, stconfig.FolderConfiguration{
-					ID:   replaceVariables(fld.Id, data),
-					Path: replaceVariables(fld.Path, data),
-					Type: mode,
+
+				folderCfg := stconfig.FolderConfiguration{
+					ID:               replaceVariables(fld.Id, data),
+					Path:             replaceVariables(settings.Path, data),
+					Type:             stconfig.FolderType(settings.Type),
+					RescanIntervalS:  int(settings.RescanIntervalS),
+					FSWatcherEnabled: !settings.FsWatcherDisabled,
+					FSWatcherDelayS:  settings.FsWatcherDelayS,
+					IgnorePerms:      settings.IgnorePermissions,
+					AutoNormalize:    !settings.NoAutoNormalize,
+					MinDiskFree: stconfig.Size{
+						Value: settings.GetMinDiskFree().GetValue(),
+						Unit:  settings.GetMinDiskFree().GetUnit(),
+					},
+					Copiers:                 int(settings.Copiers),
+					PullerMaxPendingKiB:     int(settings.PullerMaxPendingKib),
+					Hashers:                 int(settings.Hashers),
+					Order:                   stconfig.PullOrder(settings.Order),
+					IgnoreDelete:            settings.IgnoreDelete,
+					ScanProgressIntervalS:   int(settings.ScanProgressIntervalS),
+					PullerPauseS:            int(settings.PullerPauseS),
+					MaxConflicts:            int(settings.MaxConflicts),
+					DisableSparseFiles:      settings.DisableSparseFiles,
+					DisableTempIndexes:      settings.DisableTempIndexes,
+					WeakHashThresholdPct:    int(settings.WeakHashThresholdPct),
+					MarkerName:              settings.MarkerName,
+					CopyOwnershipFromParent: settings.CopyOwnershipFromParent,
+					RawModTimeWindowS:       int(settings.ModTimeWindowS),
+					MaxConcurrentWrites:     int(settings.MaxConcurrentWrites),
+					DisableFsync:            settings.DisableFsync,
+					BlockPullOrder:          stconfig.BlockPullOrder(settings.BlockPullOrder),
+					CopyRangeMethod:         stfs.CopyRangeMethod(settings.CopyRangeMethod),
+					CaseSensitiveFS:         settings.CaseSensitiveFs,
+					JunctionsAsDirs:         settings.FollowJunctions,
+					SyncOwnership:           settings.SyncOwnership,
+					SendOwnership:           settings.SendOwnership,
+					SyncXattrs:              settings.SyncXattrs,
+					SendXattrs:              settings.SendXattrs,
 					Devices: []stconfig.FolderDeviceConfiguration{
 						{DeviceID: data.device},
 					},
-				})
+				}
+				addFolders = append(addFolders, folderCfg)
 			}
 			break
 		}
 	}
-	if !matched {
+	if addDevice == nil {
 		l.Info("Device does not match any pattern, ignored")
 		return nil
 	}
 
 	l.Info("Accepting device")
-	if err := st.SetDevice(&stconfig.DeviceConfiguration{
-		DeviceID: data.device,
-		Name:     data.name,
-	}); err != nil {
+	if err := st.SetDevice(addDevice); err != nil {
 		l.Error("Failed to add device", "error", err)
 	}
 	for _, fld := range addFolders {
-		l := l.With("folder", fld.ID, "path", fld.Path)
+		l := l.With("folder", fld.ID)
 		l.Info("Accepting folder")
 		if err := st.SetFolder(&fld); err != nil {
 			l.Error("Failed to add folder", "error", err)
