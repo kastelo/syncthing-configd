@@ -47,8 +47,9 @@ pattern {
         id: "default"
     }
 
-    # Also an individual folder for each device. The mode and path are used
-    # if the folder needs to be created.
+    # Also an individual folder for each device. The `settings` are used if
+    # the folder needs to be created, otherwise the device is simply added
+    # to the existing folder configuration.
     folder {
         id: "${name}"
         settings {
@@ -84,16 +85,13 @@ run](https://github.com/kastelo/syncthing-autoacceptd/actions/workflows/build.ym
 
 ## Docker Image
 
-It's easiest to use the precompiled Docker image. Assuming a pattern file in
-`/etc/syncthing-autoacceptd/patterns.conf`, something like the command below
+It's easiest to use the precompiled Docker image. Assuming a configuration file in
+`/etc/syncthing-autoacceptd/autoacceptd.conf`, something like the command below
 will start syncthing-autoacceptd.
 
 ```
 % docker run -d --restart always --name syncthing-autoacceptd \
-    -e SYNCTHING_AUTOACCEPTD_ADDRESS=192.0.2.42:8384 \
-    -e SYNCTHING_AUTOACCEPTD_APIKEY=D814...6F7 \
-    -e SYNCTHING_AUTOACCEPTD_PATTERNS_FILE=/etc/syncthing-autoacceptd/patterns.conf \
-    -v /etc/syncthing-autoacceptd/patterns.conf:/etc/syncthing-autoacceptd/patterns.conf \
+    -v /etc/syncthing-autoacceptd/autocceptd.conf:/etc/syncthing-autoacceptd/autocceptd.conf \
     ghcr.io/kastelo/syncthing-autoacceptd:latest
 ```
 
