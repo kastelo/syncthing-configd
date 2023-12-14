@@ -1,4 +1,5 @@
-ldflags:="-X kastelo.dev/syncthing-autoacceptd/internal/build.GitVersion=$(shell git describe)"
+version:=$(shell git describe | sed s/^v//)
+ldflags:="-X kastelo.dev/syncthing-autoacceptd/internal/build.GitVersion=${version}"
 
 .PHONY: install
 install: test
@@ -23,3 +24,19 @@ build-linux-arm64:
 proto:
 	@clang-format -i proto/*.proto
 	@protoc --go_out=. --go_opt module=kastelo.dev/syncthing-autoacceptd proto/*.proto
+
+.PHONY: debian
+debian: build-linux-amd64
+	@fpm -s dir -t deb \
+		-p syncthing-autoacceptd-${version}-amd64.deb \
+		--name syncthing-autoacceptd \
+		--license mpl2 \
+		--version ${version} \
+		--architecture amd64 \
+		--description "Say hi!" \
+		--url "https://example.com/hello-world" \
+		--maintainer "You The Amazing Person <you are an amazing person at example dot com>" \
+		bin/syncthing-autoacceptd-linux-amd64=/usr/sbin/syncthing-autoacceptd \
+		etc/example-patterns.conf=/etc/syncthing-autoacceptd/patterns.conf.sample \
+		etc/syncthing-autoacceptd.service=/lib/systemd/system/syncthing-autoacceptd.service \
+		etc/default-env=/etc/default/syncthing-autoacceptd
