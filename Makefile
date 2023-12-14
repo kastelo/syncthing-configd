@@ -37,6 +37,6 @@ debian: build-linux-amd64
 		--url "https://example.com/hello-world" \
 		--maintainer "You The Amazing Person <you are an amazing person at example dot com>" \
 		bin/syncthing-autoacceptd-linux-amd64=/usr/sbin/syncthing-autoacceptd \
-		etc/example-patterns.conf=/etc/syncthing-autoacceptd/patterns.conf.sample \
+		etc/autoacceptd.conf.sample=/etc/syncthing-autoacceptd/autoacceptd.conf.sample \
 		etc/syncthing-autoacceptd.service=/lib/systemd/system/syncthing-autoacceptd.service \
 		etc/default-env=/etc/default/syncthing-autoacceptd
