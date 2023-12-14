@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/syncthing/syncthing/lib/events"
 	"kastelo.dev/syncthing-autoacceptd/internal/api"
@@ -20,7 +21,7 @@ type EventListener struct {
 
 func NewEventListener(log *slog.Logger, api *api.API, patterns *config.Configuration, eventTypes []events.EventType) *EventListener {
 	return &EventListener{
-		log:        log,
+		log:        log.With("address", api.Address()),
 		api:        api,
 		patterns:   patterns,
 		eventTypes: eventTypes,
@@ -28,6 +29,8 @@ func NewEventListener(log *slog.Logger, api *api.API, patterns *config.Configura
 }
 
 func (s *EventListener) Serve(ctx context.Context) error {
+	defer time.Sleep(time.Second) // slow down retry rate
+
 	ver, err := s.api.GetSystemVersion()
 	if err != nil {
 		s.log.Error("Failed to get Syncthing version", "error", err)
@@ -77,7 +80,7 @@ func (s *EventListener) Serve(ctx context.Context) error {
 }
 
 func (s *EventListener) String() string {
-	return fmt.Sprintf("eventListener@%p", s)
+	return fmt.Sprintf("eventListener(%s)@%p", s.api.Address(), s)
 }
 
 func (s *EventListener) handleDeviceRejected(data *deviceRejectedData, cfg *config.Configuration) error {

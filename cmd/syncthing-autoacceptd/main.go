@@ -20,10 +20,8 @@ import (
 )
 
 type CLI struct {
-	Address  string `short:"a" help:"Address of Syncthing API" default:"127.0.0.1:8384" env:"SYNCTHING_AUTOACCEPTD_ADDRESS"`
-	APIKey   string `short:"k" help:"Key for the Syncthing API" required:"true" env:"SYNCTHING_AUTOACCEPTD_APIKEY"`
-	Patterns string `short:"p" type:"existingfile" help:"Path to patterns.conf" required:"true" env:"SYNCTHING_AUTOACCEPTD_PATTERNS_FILE"`
-	Debug    bool   `short:"d" help:"Enable debug logging" env:"SYNCTHING_AUTOACCEPTD_DEBUG"`
+	Config string `short:"c" type:"existingfile" help:"Path to autoacceptd.conf" env:"AUTOACCEPTD_CONFIG_FILE" default:"/etc/syncthing-autoacceptd/autoacceptd.conf"`
+	Debug  bool   `short:"d" help:"Enable debug logging" env:"AUTOACCEPTD_DEBUG"`
 }
 
 func main() {
@@ -46,31 +44,31 @@ func main() {
 
 	l.Info("Starting Syncthing Auto Accept Daemon", "version", build.GitVersion, "os", runtime.GOOS, "arch", runtime.GOARCH)
 
-	config, err := loadConfig(cli.Patterns)
+	config, err := loadConfig(cli.Config)
 	if err != nil {
 		l.Error("Failed to load config", "error", err)
 		os.Exit(1)
 	}
 
-	api := api.NewAPI(l, cli.Address, cli.APIKey)
-	types := []events.EventType{events.ConfigSaved, events.DeviceRejected, events.FolderRejected}
-	proc := processor.NewEventListener(l, api, config, types)
-
 	main := suture.New("main", suture.Spec{
-		FailureThreshold: 2,
+		FailureThreshold: 1,
 		EventHook: func(e suture.Event) {
-			if e.Type() == suture.EventTypeResume {
-				l.Info("Service resuming", "event", e.String())
-			} else if v, ok := e.Map()["restarting"].(bool); ok && v {
-				l.Warn("Service restarting", "event", e.String())
-			} else {
+			switch e.Type() {
+			case suture.EventTypeServiceTerminate, suture.EventTypeBackoff, suture.EventTypeResume:
+				// Business as usual, handled by logging in the services themselves
+			default:
 				l.Error("Service error", "event", e.String())
 			}
 		},
 	})
 
-	main.Add(api)
-	main.Add(proc)
+	types := []events.EventType{events.ConfigSaved, events.DeviceRejected, events.FolderRejected}
+	for _, s := range config.Syncthing {
+		api := api.NewAPI(l, s.Address, s.ApiKey)
+		main.Add(api)
+		proc := processor.NewEventListener(l, api, config, types)
+		main.Add(proc)
+	}
 
 	if err := main.Serve(context.Background()); err != nil {
 		l.Error("Failed to run service", "error", err)
