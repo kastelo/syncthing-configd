@@ -1,11 +1,16 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"net/netip"
+	"os"
 
 	"github.com/syncthing/syncthing/lib/events"
 	"github.com/syncthing/syncthing/lib/protocol"
 )
+
+var errBadExpansion = errors.New("failed to expand variable (empty value)")
 
 type deviceRejectedData struct {
 	name    string
@@ -41,4 +46,33 @@ func getDeviceRejectedData(ev events.Event) (*deviceRejectedData, error) {
 	}
 
 	return &res, nil
+}
+
+func replaceVariables(s string, d *deviceRejectedData) (string, error) {
+	var err error
+	res := os.Expand(s, func(key string) string {
+		switch key {
+		case "device":
+			v := d.device.String()
+			if v == "" {
+				err = fmt.Errorf("%w: %s", errBadExpansion, key)
+			}
+			return v
+		case "name":
+			v := d.name
+			if v == "" {
+				err = fmt.Errorf("%w: %s", errBadExpansion, key)
+			}
+			return v
+		case "address":
+			v := d.address.String()
+			if v == "" {
+				err = fmt.Errorf("%w: %s", errBadExpansion, key)
+			}
+			return v
+		}
+		err = fmt.Errorf("%w: %s", errBadExpansion, key)
+		return ""
+	})
+	return res, err
 }
