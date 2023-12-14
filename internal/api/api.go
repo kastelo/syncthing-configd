@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -22,11 +20,10 @@ type API struct {
 	client          *resty.Client
 	serialisedFuncs chan func()
 	configChangers  chan func(cfg *stconfig.Configuration)
-	eventTypes      []events.EventType
 	events          chan events.Event
 }
 
-func NewAPI(l *slog.Logger, hostPort string, apiKey string, eventTypes []events.EventType) *API {
+func NewAPI(l *slog.Logger, hostPort string, apiKey string) *API {
 	url := fmt.Sprintf("http://%s/rest/", hostPort)
 
 	c := resty.New()
@@ -42,11 +39,9 @@ func NewAPI(l *slog.Logger, hostPort string, apiKey string, eventTypes []events.
 		client:          c,
 		serialisedFuncs: make(chan func(), 1),
 		configChangers:  make(chan func(cfg *stconfig.Configuration), 1),
-		eventTypes:      eventTypes,
 		events:          make(chan events.Event, 64),
 	}
 
-	svc.Add(eventsService{API: api})
 	svc.Add(configService{API: api})
 
 	return api
@@ -84,71 +79,11 @@ func (s configService) Serve(ctx context.Context) error {
 	}
 }
 
-type eventsService struct {
-	*API
-}
-
-func (s eventsService) Serve(ctx context.Context) error {
-	s.log.Debug("Starting events service")
-	defer s.log.Debug("Stopping events service")
-
-	var eventTypes string
-	if len(s.eventTypes) > 0 {
-		var typeStrs []string
-		for _, t := range s.eventTypes {
-			typeStrs = append(typeStrs, t.String())
-		}
-		eventTypes = strings.Join(typeStrs, ",")
+func (s *API) Events(types []events.EventType) *EventSource {
+	return &EventSource{
+		api:        s,
+		eventTypes: types,
 	}
-
-	start := time.Now()
-	lastSeen := 0
-	minLoopSleep := 250 * time.Millisecond
-	loopSleep := minLoopSleep
-
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-time.After(loopSleep):
-		}
-
-		r := s.client.R()
-		r.SetQueryParam("since", strconv.Itoa(lastSeen))
-		if lastSeen == 0 {
-			r.SetQueryParam("limit", "1")
-		}
-		if eventTypes != "" {
-			r.SetQueryParam("events", eventTypes)
-		}
-		r.SetResult([]events.Event{})
-		resp, err := r.Get("events")
-		if err != nil {
-			s.log.Error("Failed to get events", "error", err)
-			if loopSleep < 10*time.Second {
-				loopSleep *= 2
-			}
-			continue
-		}
-		if resp.IsError() {
-			s.log.Error("Failed to get events", "status", resp.Status(), "body", resp.String())
-			if loopSleep < 10*time.Second {
-				loopSleep *= 2
-			}
-			continue
-		}
-		for _, e := range *resp.Result().(*[]events.Event) {
-			if e.Time.After(start) {
-				s.events <- e
-			}
-			lastSeen = e.SubscriptionID
-			loopSleep = minLoopSleep
-		}
-	}
-}
-
-func (s *API) Events() <-chan events.Event {
-	return s.events
 }
 
 func (s *API) GetConfig() (*stconfig.Configuration, error) {
