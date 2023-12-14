@@ -1,11 +1,15 @@
 ldflags:="-X kastelo.dev/syncthing-autoacceptd/internal/build.GitVersion=$(shell git describe)"
 
 .PHONY: install
-install:
+install: test
 	@go install -v -ldflags $(ldflags) ./cmd/syncthing-autoacceptd
 
+.PHONY: test
+test:
+	@go test ./...
+
 .PHONY: build
-build: build-linux-amd64 build-linux-arm64
+build: test build-linux-amd64 build-linux-arm64
 
 build-linux-amd64:
 	@mkdir -p bin
