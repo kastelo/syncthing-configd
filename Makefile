@@ -33,9 +33,9 @@ debian: build-linux-amd64
 		--license mpl2 \
 		--version ${version} \
 		--architecture amd64 \
-		--description "Say hi!" \
-		--url "https://example.com/hello-world" \
-		--maintainer "You The Amazing Person <you are an amazing person at example dot com>" \
+		--description "Syncthing Auto-Accept Daemon" \
+		--url "https://syncthing.net/" \
+		--maintainer "Kastelo AB <support@kastelo.net>" \
 		bin/syncthing-autoacceptd-linux-amd64=/usr/sbin/syncthing-autoacceptd \
 		etc/autoacceptd.conf.sample=/etc/syncthing-autoacceptd/autoacceptd.conf.sample \
 		etc/syncthing-autoacceptd.service=/lib/systemd/system/syncthing-autoacceptd.service \
