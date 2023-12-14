@@ -1,4 +1,4 @@
-package main
+package processor
 
 import (
 	"errors"
@@ -10,7 +10,10 @@ import (
 	"github.com/syncthing/syncthing/lib/protocol"
 )
 
-var errBadExpansion = errors.New("failed to expand variable (empty value)")
+var (
+	errBadExpansion   = errors.New("failed to expand variable (empty value)")
+	errMalformedEvent = errors.New("malformed event")
+)
 
 type deviceRejectedData struct {
 	name    string
