@@ -24,8 +24,9 @@ pattern {
         id: "default"
     }
 
-    # Also an individual folder for each device. The mode and path are used
-    # if the folder needs to be created.
+    # Also an individual folder for each device. The `settings` are used if
+    # the folder needs to be created, otherwise the device is simply added
+    # to the existing folder configuration.
     folder {
         id: "${name}"
         settings {
