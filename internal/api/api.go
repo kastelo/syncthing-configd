@@ -17,14 +17,15 @@ import (
 type API struct {
 	suture.Service
 	log             *slog.Logger
+	address         string
 	client          *resty.Client
 	serialisedFuncs chan func()
 	configChangers  chan func(cfg *stconfig.Configuration)
 	events          chan events.Event
 }
 
-func NewAPI(l *slog.Logger, hostPort string, apiKey string) *API {
-	url := fmt.Sprintf("http://%s/rest/", hostPort)
+func NewAPI(l *slog.Logger, address string, apiKey string) *API {
+	url := fmt.Sprintf("http://%s/rest/", address)
 
 	c := resty.New()
 	c.SetBaseURL(url)
@@ -35,7 +36,8 @@ func NewAPI(l *slog.Logger, hostPort string, apiKey string) *API {
 
 	api := &API{
 		Service:         svc,
-		log:             l,
+		log:             l.With("address", address),
+		address:         address,
 		client:          c,
 		serialisedFuncs: make(chan func(), 1),
 		configChangers:  make(chan func(cfg *stconfig.Configuration), 1),
@@ -45,6 +47,14 @@ func NewAPI(l *slog.Logger, hostPort string, apiKey string) *API {
 	svc.Add(configService{API: api})
 
 	return api
+}
+
+func (s *API) Address() string {
+	return s.address
+}
+
+func (s *API) String() string {
+	return fmt.Sprintf("api(%s)@%p", s.address, s)
 }
 
 type configService struct {

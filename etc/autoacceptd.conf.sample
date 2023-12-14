@@ -1,3 +1,12 @@
+syncthing {
+    address: "127.0.0.1:8081"
+    api_key: "abc123"
+}
+syncthing {
+    address: "127.0.0.1:8082"
+    api_key: "abc123"
+}
+
 pattern {
     # Accept devices from 172.16.32.0/24
     accept_cidr: "172.16.32.0/24"

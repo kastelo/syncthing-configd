@@ -4,7 +4,15 @@ package config;
 
 option go_package = "kastelo.dev/syncthing-autoacceptd/internal/config";
 
-message Configuration { repeated DevicePattern pattern = 1; }
+message Configuration {
+  repeated SyncthingInstance syncthing = 1;
+  repeated DevicePattern pattern = 2;
+}
+
+message SyncthingInstance {
+  string address = 1;
+  string api_key = 2;
+}
 
 message DevicePattern {
   repeated FolderPattern folder = 1;

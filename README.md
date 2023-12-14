@@ -16,20 +16,20 @@ if they don't exist beforehand, with a pattern for the ID and path.
 
 ## Usage
 
-Configuration is two-part: environment variables or flags for basic values,
-and a configuration file for patterns. The basic values are as follows:
-
-- `$SYNCTHING_AUTOACCEPTD_ADDRESS`: The API address of the Syncthing instance to manage; `127.0.0.1:8384` or similar.
-- `$SYNCTHING_AUTOACCEPTD_APIKEY`: The API key which that Syncthing instance accepts.
-- `$SYNCTHING_AUTOACCEPTD_PATTERNS_FILE`: The path to `patterns.conf`.
-
-Further advanced flags may exists; `syncthing-autoacceptd --help` will list them all.
-
-The pattern configuration is a list of patterns matching device source
-addresses and the folders those devices should be assigned. An example is
-worth a lot of words:
+A configuration file contains the Syncthing instance(s) to connect to, and
+patterns to apply to incoming device connections. An example is worth a lot
+of words:
 
 ```
+syncthing {
+    address: "127.0.0.1:8081"
+    api_key: "abc123"
+}
+syncthing {
+    address: "127.0.0.1:8082"
+    api_key: "abc123"
+}
+
 pattern {
     # Accept devices from 172.16.32.0/24
     accept_cidr: "172.16.32.0/24"
