@@ -39,4 +39,6 @@ debian: build-linux-amd64
 		bin/syncthing-autoacceptd-linux-amd64=/usr/sbin/syncthing-autoacceptd \
 		etc/autoacceptd.conf.sample=/etc/syncthing-autoacceptd/autoacceptd.conf.sample \
 		etc/syncthing-autoacceptd.service=/lib/systemd/system/syncthing-autoacceptd.service \
-		etc/default-env=/etc/default/syncthing-autoacceptd
+		etc/default-env=/etc/default/syncthing-autoacceptd \
+		README.md=/usr/share/doc/syncthing-autoacceptd/README.md \
+		LICENSE=/usr/share/doc/syncthing-autoacceptd/LICENSE
