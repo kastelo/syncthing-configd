@@ -35,6 +35,13 @@ pattern {
     accept_cidr: "172.16.32.0/24"
     accept_cidr: "127.0.0.0/8"
 
+    settings {
+        max_send_kbps: 250
+        max_recv_kbps: 150
+        num_connections: 1
+        max_request_kib: 1024
+    }
+
     # Assign them the folder "default".
     folder {
         id: "default"
@@ -44,8 +51,15 @@ pattern {
     # if the folder needs to be created.
     folder {
         id: "${name}"
-        mode: SENDRECEIVE
-        path: "/var/device-folders/${name}"
+        settings {
+            label: "Device ${name}'s folder"
+            type: SEND_RECEIVE
+            path: "/var/device-folders/${name}"
+            fs_watcher_disabled: true
+            rescan_interval_s: 86400
+            case_sensitive_fs: true
+            ignore_permissions: true
+        }
     }
 }
 
@@ -58,6 +72,15 @@ pattern {
     }
 }
 ```
+
+For the full range of settings, please see [the Protobuf
+definition](https://github.com/kastelo/syncthing-autoacceptd/blob/main/proto/config.proto).
+In general it closely mirrors the config options of Syncthing itself.
+
+## Debian Package
+
+A Debian package is available as the artifact of the latest [build
+run](https://github.com/kastelo/syncthing-autoacceptd/actions/workflows/build.yml).
 
 ## Docker Image
 
