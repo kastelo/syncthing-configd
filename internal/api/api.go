@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -31,6 +32,7 @@ func NewAPI(l *slog.Logger, address string, apiKey string) *API {
 	c.SetBaseURL(url)
 	c.SetAuthScheme("Bearer")
 	c.SetAuthToken(apiKey)
+	c.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 
 	svc := suture.NewSimple("API")
 
