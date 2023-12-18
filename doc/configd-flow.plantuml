@@ -4,10 +4,23 @@
 skinparam BoxPadding 10
 skinparam dpi 200
 skinparam backgroundcolor transparent
+skinparam participant {
+     BackgroundColor #404040
+     FontColor #ffffff
+}
+skinparam note {
+        BackgroundColor #404040
+        FontColor #ffffff
+}
+skinparam activity {
+    ArrowColor #fffff
+    ArrowFontColor #ffffff
+    FontColor #ffffff
+}
 
-participant "Some device" as Client
-participant Syncthing as Server
-participant "configd" as configd
+participant "Other Syncthing" as Client
+participant Syncthing as Server #3f51b5
+participant "Syncthing Configd" as configd #f44336
 
 activate Server
 Client -> Server : Connect
