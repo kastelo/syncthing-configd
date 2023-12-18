@@ -1,24 +1,22 @@
-# syncthing-configd
+# Syncthing-Configd
 
 A daemon that automatically manages certain aspects of the Syncthing
 configuration.
 
-## Principle of Operation
+## Principle of operation
 
-The daemon listens to Syncthing events informing it of of "rejected
-devices". A device is rejected when an incoming connection is received but
-Syncthing is not configured to accept a connection from that device.
-
-For each rejected device it checks the configured patterns to see if source
-address matches a known network. If so, it applies the pattern to add the
-device and share the relates set of folders with it. Folders can be created
-if they don't exist beforehand, with a pattern for the ID and path.
+Syncthing-Configd is a sidecar process to Syncthing itself. It listens to
+events, processes them according to a configured ruleset, and applies
+configuration changes to Syncthing accordingly.
 
 ## Usage
 
-A configuration file contains the Syncthing instance(s) to connect to, and
-patterns to apply to incoming device connections. An example is worth a lot
-of words:
+### Configuration
+
+A configuration file contains the Syncthing instance(s) to connect to,
+patterns to apply to incoming device connections, and other directives.
+Initially, one or more `syncthing` sections defines the Syncthing
+instance(s) to connect to:
 
 ```
 syncthing {
@@ -29,7 +27,22 @@ syncthing {
     address: "127.0.0.1:8082"
     api_key: "abc123"
 }
+```
 
+### Adding devices and folders
+
+The daemon listens to Syncthing events informing it of of "rejected
+devices". A device is rejected when an incoming connection is received but
+Syncthing is not configured to accept a connection from that device.
+
+For each rejected device it checks the configured patterns to see if source
+address matches a known network. If so, it applies the pattern to add the
+device and share the relates set of folders with it. Folders can be created
+if they don't exist beforehand, with a pattern for the ID and path.
+
+Patterns are defined in the configuration file:
+
+```
 pattern {
     # Accept devices from 172.16.32.0/24
     accept_cidr: "172.16.32.0/24"
@@ -93,12 +106,14 @@ garbage_collect {
 }
 ```
 
-## Debian Package
+## Installation
+
+### Debian Package
 
 A Debian package is available as the artifact of the latest [build
 run](https://github.com/kastelo/syncthing-configd/actions/workflows/build.yml).
 
-## Docker Image
+### Docker Image
 
 It's easiest to use the precompiled Docker image. Assuming a configuration file in
 `/etc/syncthing-configd/configd.conf`, something like the command below
