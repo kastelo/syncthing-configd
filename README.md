@@ -82,11 +82,13 @@ In general it closely mirrors the config options of Syncthing itself.
 
 Devices and folders that are no longer in use can be automatically removed.
 
+```
 garbage_collect {
     run_every_s: 86400; # once a day, midnight
     unseen_devices_days: 90;
     unshared_folders: true;
 }
+```
 
 ## Debian Package
 
