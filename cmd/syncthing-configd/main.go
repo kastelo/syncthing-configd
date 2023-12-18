@@ -16,6 +16,7 @@ import (
 	"kastelo.dev/syncthing-configd/internal/api"
 	"kastelo.dev/syncthing-configd/internal/build"
 	"kastelo.dev/syncthing-configd/internal/config"
+	"kastelo.dev/syncthing-configd/internal/gc"
 	"kastelo.dev/syncthing-configd/internal/processor"
 )
 
@@ -66,8 +67,14 @@ func main() {
 	for _, s := range config.Syncthing {
 		api := api.NewAPI(l, s.Address, s.ApiKey)
 		main.Add(api)
+
 		proc := processor.NewEventListener(l, api, config, types)
 		main.Add(proc)
+
+		if config.GarbageCollect.RunEveryS > 0 {
+			gc := gc.NewGarbageCollector(l, api, config.GarbageCollect)
+			main.Add(gc)
+		}
 	}
 
 	if err := main.Serve(context.Background()); err != nil {

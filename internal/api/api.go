@@ -171,6 +171,32 @@ func (s *API) GetSystemVersion() (*SystemVersion, error) {
 	return res.value, res.err
 }
 
+type DeviceStatistics struct {
+	LastSeen               time.Time
+	LastConnectionDuration float64 // seconds
+}
+
+func (s *API) GetDeviceStats() (map[protocol.DeviceID]DeviceStatistics, error) {
+	resC := make(chan maybe[map[protocol.DeviceID]DeviceStatistics], 1)
+	s.serialisedFuncs <- func() {
+		resC <- maybeFunc(func() (map[protocol.DeviceID]DeviceStatistics, error) {
+			res := make(map[protocol.DeviceID]DeviceStatistics)
+			r := s.client.R()
+			r.SetResult(&res)
+			resp, err := r.Get("stats/device")
+			if err != nil {
+				return nil, err
+			}
+			if resp.IsError() {
+				return nil, errors.New(resp.Status())
+			}
+			return res, nil
+		})
+	}
+	res := <-resC
+	return res.value, res.err
+}
+
 func (s *API) SetDevice(cfg *stconfig.DeviceConfiguration) error {
 	errC := make(chan error, 1)
 	s.configChangers <- func(cur *stconfig.Configuration) {
@@ -231,6 +257,42 @@ func (s *API) SetFolder(cfg *stconfig.FolderConfiguration) error {
 			resp, err = r.Post("config/folders")
 		}
 
+		if err != nil {
+			errC <- err
+			return
+		}
+		if resp.IsError() {
+			errC <- errors.New(resp.Status())
+			return
+		}
+		errC <- nil
+	}
+	return <-errC
+}
+
+func (s *API) RemoveFolder(folderID string) error {
+	errC := make(chan error, 1)
+	s.configChangers <- func(cur *stconfig.Configuration) {
+		r := s.client.R()
+		resp, err := r.Delete("config/folders/" + folderID)
+		if err != nil {
+			errC <- err
+			return
+		}
+		if resp.IsError() {
+			errC <- errors.New(resp.Status())
+			return
+		}
+		errC <- nil
+	}
+	return <-errC
+}
+
+func (s *API) RemoveDevice(deviceID protocol.DeviceID) error {
+	errC := make(chan error, 1)
+	s.configChangers <- func(cur *stconfig.Configuration) {
+		r := s.client.R()
+		resp, err := r.Delete("config/devices/" + deviceID.String())
 		if err != nil {
 			errC <- err
 			return

@@ -78,6 +78,16 @@ For the full range of settings, please see [the Protobuf
 definition](https://github.com/kastelo/syncthing-configd/blob/main/proto/config.proto).
 In general it closely mirrors the config options of Syncthing itself.
 
+### Garbage collecting unused device & folders
+
+Devices and folders that are no longer in use can be automatically removed.
+
+garbage_collect {
+    run_every_s: 86400; # once a day, midnight
+    unseen_devices_days: 90;
+    unshared_folders: true;
+}
+
 ## Debian Package
 
 A Debian package is available as the artifact of the latest [build

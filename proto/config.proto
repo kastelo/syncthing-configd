@@ -7,6 +7,7 @@ option go_package = "kastelo.dev/syncthing-configd/internal/config";
 message Configuration {
   repeated SyncthingInstance syncthing = 1;
   repeated DevicePattern pattern = 2;
+  GarbageCollection garbage_collect = 3;
 }
 
 message SyncthingInstance {
@@ -111,4 +112,10 @@ enum CopyRangeMethod {
 message Size {
   double value = 1;
   string unit = 2;
+}
+
+message GarbageCollection {
+  int32 run_every_s = 1;
+  int32 unseen_devices_days = 2;
+  bool unshared_folders = 3;
 }
