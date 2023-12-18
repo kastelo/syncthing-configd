@@ -81,12 +81,15 @@ In general it closely mirrors the config options of Syncthing itself.
 ### Garbage collecting unused device & folders
 
 Devices and folders that are no longer in use can be automatically removed.
+Devices are removed if they have not been "seen" (i.e., had an active
+connection) for a given number of days. Folders are removed if they are not
+shared with any other device -- typically, after a device has been removed.
 
 ```
 garbage_collect {
-    run_every_s: 86400; # once a day, midnight
-    unseen_devices_days: 90;
-    unshared_folders: true;
+    run_every_s: 86400  # once a day, midnight UTC
+    unseen_devices_days: 90
+    unshared_folders: true
 }
 ```
 

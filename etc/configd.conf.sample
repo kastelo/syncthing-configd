@@ -51,7 +51,7 @@ pattern {
 }
 
 # garbage_collect {
-#     run_every_s: 86400;
-#     unseen_devices_days: 90;
-#     unshared_folders: true;
+#     run_every_s: 86400
+#     unseen_devices_days: 90
+#     unshared_folders: true
 # }
