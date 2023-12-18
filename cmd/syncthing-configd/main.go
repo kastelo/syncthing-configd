@@ -10,14 +10,14 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/lmittmann/tint"
 	"github.com/mattn/go-isatty"
-	"github.com/syncthing/syncthing/lib/events"
+	stevents "github.com/syncthing/syncthing/lib/events"
 	"github.com/thejerf/suture/v4"
 	"google.golang.org/protobuf/encoding/prototext"
 	"kastelo.dev/syncthing-configd/internal/api"
 	"kastelo.dev/syncthing-configd/internal/build"
 	"kastelo.dev/syncthing-configd/internal/config"
+	"kastelo.dev/syncthing-configd/internal/events"
 	"kastelo.dev/syncthing-configd/internal/gc"
-	"kastelo.dev/syncthing-configd/internal/processor"
 )
 
 type CLI struct {
@@ -63,13 +63,13 @@ func main() {
 		},
 	})
 
-	types := []events.EventType{events.ConfigSaved, events.DeviceRejected, events.FolderRejected}
+	types := []stevents.EventType{stevents.ConfigSaved, stevents.DeviceRejected, stevents.FolderRejected}
 	for _, s := range config.Syncthing {
 		api := api.NewAPI(l, s.Address, s.ApiKey)
 		main.Add(api)
 
-		proc := processor.NewEventListener(l, api, config, types)
-		main.Add(proc)
+		el := events.NewEventListener(l, api, config, types)
+		main.Add(el)
 
 		if config.GarbageCollect.RunEveryS > 0 {
 			gc := gc.NewGarbageCollector(l, api, config.GarbageCollect)
