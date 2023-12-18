@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/syncthing/syncthing/lib/events"
-	"kastelo.dev/syncthing-autoacceptd/internal/api"
-	"kastelo.dev/syncthing-autoacceptd/internal/config"
+	"kastelo.dev/syncthing-configd/internal/api"
+	"kastelo.dev/syncthing-configd/internal/config"
 )
 
 type EventListener struct {

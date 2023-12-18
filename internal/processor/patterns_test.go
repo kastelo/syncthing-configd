@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	"kastelo.dev/syncthing-autoacceptd/internal/config"
+	"kastelo.dev/syncthing-configd/internal/config"
 )
 
 func TestPatterns(t *testing.T) {

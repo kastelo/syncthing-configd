@@ -1,4 +1,4 @@
-@startuml autoacceptd-flow
+@startuml configd-flow
 
 !theme blueprint
 skinparam BoxPadding 10
@@ -7,7 +7,7 @@ skinparam backgroundcolor transparent
 
 participant "Some device" as Client
 participant Syncthing as Server
-participant "autoacceptd" as Autoacceptd
+participant "configd" as configd
 
 activate Server
 Client -> Server : Connect
@@ -17,16 +17,16 @@ note over Server
 end note
 return Rejected
 
-Server -> Autoacceptd : "Device Rejected" event
-activate Autoacceptd
-Autoacceptd -> Server : Add device
+Server -> configd : "Device Rejected" event
+activate configd
+configd -> Server : Add device
 note right
-    Autoacceptd applies rules
+    configd applies rules
     and patterns based on
     source address
 end note
-Autoacceptd -> Server : Add folders
-deactivate Autoacceptd
+configd -> Server : Add folders
+deactivate configd
 
 activate Client
 Client -> Server : Connect

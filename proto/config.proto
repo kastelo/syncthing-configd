@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package config;
 
-option go_package = "kastelo.dev/syncthing-autoacceptd/internal/config";
+option go_package = "kastelo.dev/syncthing-configd/internal/config";
 
 message Configuration {
   repeated SyncthingInstance syncthing = 1;

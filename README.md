@@ -1,7 +1,7 @@
-# syncthing-autoacceptd
+# syncthing-configd
 
-A daemon that automatically accepts and assigns folders to incoming clients,
-based on certain criteria.
+A daemon that automatically manages certain aspects of the Syncthing
+configuration.
 
 ## Principle of Operation
 
@@ -75,24 +75,24 @@ pattern {
 ```
 
 For the full range of settings, please see [the Protobuf
-definition](https://github.com/kastelo/syncthing-autoacceptd/blob/main/proto/config.proto).
+definition](https://github.com/kastelo/syncthing-configd/blob/main/proto/config.proto).
 In general it closely mirrors the config options of Syncthing itself.
 
 ## Debian Package
 
 A Debian package is available as the artifact of the latest [build
-run](https://github.com/kastelo/syncthing-autoacceptd/actions/workflows/build.yml).
+run](https://github.com/kastelo/syncthing-configd/actions/workflows/build.yml).
 
 ## Docker Image
 
 It's easiest to use the precompiled Docker image. Assuming a configuration file in
-`/etc/syncthing-autoacceptd/autoacceptd.conf`, something like the command below
-will start syncthing-autoacceptd.
+`/etc/syncthing-configd/configd.conf`, something like the command below
+will start syncthing-configd.
 
 ```
-% docker run -d --restart always --name syncthing-autoacceptd \
-    -v /etc/syncthing-autoacceptd/autocceptd.conf:/etc/syncthing-autoacceptd/autocceptd.conf \
-    ghcr.io/kastelo/syncthing-autoacceptd:latest
+% docker run -d --restart always --name syncthing-configd \
+    -v /etc/syncthing-configd/configd.conf:/etc/syncthing-configd/configd.conf \
+    ghcr.io/kastelo/syncthing-configd:latest
 ```
 
 Note that since a Docker container runs in a separate namespace it will not

@@ -13,15 +13,15 @@ import (
 	"github.com/syncthing/syncthing/lib/events"
 	"github.com/thejerf/suture/v4"
 	"google.golang.org/protobuf/encoding/prototext"
-	"kastelo.dev/syncthing-autoacceptd/internal/api"
-	"kastelo.dev/syncthing-autoacceptd/internal/build"
-	"kastelo.dev/syncthing-autoacceptd/internal/config"
-	"kastelo.dev/syncthing-autoacceptd/internal/processor"
+	"kastelo.dev/syncthing-configd/internal/api"
+	"kastelo.dev/syncthing-configd/internal/build"
+	"kastelo.dev/syncthing-configd/internal/config"
+	"kastelo.dev/syncthing-configd/internal/processor"
 )
 
 type CLI struct {
-	Config string `short:"c" type:"existingfile" help:"Path to autoacceptd.conf" env:"AUTOACCEPTD_CONFIG_FILE" default:"/etc/syncthing-autoacceptd/autoacceptd.conf"`
-	Debug  bool   `short:"d" help:"Enable debug logging" env:"AUTOACCEPTD_DEBUG"`
+	Config string `short:"c" type:"existingfile" help:"Path to configd.conf" env:"CONFIG_FILE" default:"/etc/syncthing-configd/configd.conf"`
+	Debug  bool   `short:"d" help:"Enable debug logging" env:"DEBUG"`
 }
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 	}))
 	slog.SetDefault(l)
 
-	l.Info("Starting Syncthing Auto Accept Daemon", "version", build.GitVersion, "os", runtime.GOOS, "arch", runtime.GOARCH)
+	l.Info("Starting Syncthing Configuration Daemon", "version", build.GitVersion, "os", runtime.GOOS, "arch", runtime.GOARCH)
 
 	config, err := loadConfig(cli.Config)
 	if err != nil {

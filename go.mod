@@ -1,4 +1,4 @@
-module kastelo.dev/syncthing-autoacceptd
+module kastelo.dev/syncthing-configd
 
 go 1.21
 

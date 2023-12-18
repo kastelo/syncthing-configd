@@ -1,0 +1,11 @@
+[Unit]
+Description=Syncthing Configuration Daemon
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/default/syncthing-configd
+ExecStart=/usr/sbin/syncthing-configd
+Restart=on-failure
+RestartPreventExitStatus=255
+RuntimeDirectory=syncthing-configd
+RuntimeDirectoryMode=0755

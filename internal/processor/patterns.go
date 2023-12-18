@@ -5,7 +5,7 @@ import (
 
 	stconfig "github.com/syncthing/syncthing/lib/config"
 	stfs "github.com/syncthing/syncthing/lib/fs"
-	"kastelo.dev/syncthing-autoacceptd/internal/config"
+	"kastelo.dev/syncthing-configd/internal/config"
 )
 
 var errNoMatchingPattern = errors.New("device does not match any pattern")
