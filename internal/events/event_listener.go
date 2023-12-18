@@ -46,6 +46,8 @@ func (s *EventListener) Serve(ctx context.Context) error {
 
 	es := s.api.Events(s.eventTypes)
 
+	s.log.Debug("Listening for events...")
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -53,7 +55,6 @@ func (s *EventListener) Serve(ctx context.Context) error {
 		default:
 		}
 
-		s.log.Debug("Listening for events...")
 		evs, err := es.Events(ctx)
 		if err != nil {
 			s.log.Error("Failed to get events", "error", err)
