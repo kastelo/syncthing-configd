@@ -36,7 +36,7 @@ jobs:
           make build debian
 
       - name: Archive artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debian-packages
           path: "*.deb"
