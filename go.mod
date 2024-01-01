@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/alecthomas/kong v0.8.1
-	github.com/go-resty/resty/v2 v2.10.0
+	github.com/go-resty/resty/v2 v2.11.0
 	github.com/lmittmann/tint v1.0.3
 	github.com/mattn/go-isatty v0.0.20
 	github.com/syncthing/syncthing v1.27.0
