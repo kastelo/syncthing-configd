@@ -7,7 +7,7 @@ require (
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/lmittmann/tint v1.0.3
 	github.com/mattn/go-isatty v0.0.20
-	github.com/syncthing/syncthing v1.27.2
+	github.com/syncthing/syncthing v1.27.3
 	github.com/thejerf/suture/v4 v4.0.2
 	google.golang.org/protobuf v1.32.0
 )
