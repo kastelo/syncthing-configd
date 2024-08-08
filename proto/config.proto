@@ -26,12 +26,6 @@ message FolderPattern {
   FolderConfiguration settings = 2;
 }
 
-enum Mode {
-  SENDRECEIVE = 0;
-  SENDONLY = 1;
-  RECEIVEONLY = 2;
-}
-
 message DeviceConfiguration {
   repeated string addresses = 3;
   repeated string allowed_networks = 10;
