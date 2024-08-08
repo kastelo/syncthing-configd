@@ -37,9 +37,10 @@ func main() {
 		level = slog.LevelDebug
 	}
 	l := slog.New(tint.NewHandler(w, &tint.Options{
-		Level:     level,
-		AddSource: cli.Debug,
-		NoColor:   !isatty.IsTerminal(w.Fd()),
+		AddSource:  cli.Debug,
+		Level:      level,
+		TimeFormat: "2006-01-02T15:04:05.000Z07:00",
+		NoColor:    !isatty.IsTerminal(w.Fd()),
 	}))
 	slog.SetDefault(l)
 
