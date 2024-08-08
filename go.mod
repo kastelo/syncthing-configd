@@ -8,7 +8,7 @@ require (
 	github.com/lmittmann/tint v1.0.4
 	github.com/mattn/go-isatty v0.0.20
 	github.com/syncthing/syncthing v1.27.2
-	github.com/thejerf/suture/v4 v4.0.2
+	github.com/thejerf/suture/v4 v4.0.5
 	google.golang.org/protobuf v1.33.0
 )
 
