@@ -72,7 +72,7 @@ func main() {
 		el := events.NewEventListener(l, api, config, types)
 		main.Add(el)
 
-		if config.GarbageCollect.RunEveryS > 0 {
+		if config.GetGarbageCollect().GetRunEveryS() > 0 {
 			gc := gc.NewGarbageCollector(l, api, config.GarbageCollect)
 			main.Add(gc)
 		}
