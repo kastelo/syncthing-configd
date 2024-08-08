@@ -3,7 +3,7 @@ module kastelo.dev/syncthing-configd
 go 1.21
 
 require (
-	github.com/alecthomas/kong v0.8.1
+	github.com/alecthomas/kong v0.9.0
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/lmittmann/tint v1.0.4
 	github.com/mattn/go-isatty v0.0.20
