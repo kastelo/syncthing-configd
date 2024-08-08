@@ -13,6 +13,10 @@ configuration changes to Syncthing accordingly.
 
 ### Configuration
 
+There is a [sample configuration
+file](https://github.com/kastelo/syncthing-configd/blob/main/etc/configd.conf.sample)
+in the repository.
+
 A configuration file contains the Syncthing instance(s) to connect to,
 patterns to apply to incoming device connections, and other directives.
 Initially, one or more `syncthing` sections defines the Syncthing
