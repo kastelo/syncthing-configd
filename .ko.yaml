@@ -1,0 +1,11 @@
+builds:
+- id: syncthing-configd
+  dir: .
+  main: ./cmd/syncthing-configd
+  ldflags:
+  - -s -w
+  - -extldflags "-static"
+  - -X kastelo.dev/syncthing-configd/internal/build.GitVersion={{.Env.version}}
+defaultPlatforms:
+- linux/arm64
+- linux/amd64

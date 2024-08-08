@@ -1,0 +1,54 @@
+name: Build and Publish
+
+on:
+  push:
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  build-and-push-docker-image:
+    name: Build Docker image and push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+
+      - uses: go-semantic-release/action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup ko
+        uses: ko-build/setup-ko@v0.6
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build containers
+        run: |
+          git fetch --tags
+          descr=$(git describe --tags)
+          short=$(git describe --tags --abbrev=0)
+          export version="${descr#v}"
+          if [[ $descr == $short ]]; then
+            minor="${v#*.}"
+            major="${v%%.*}"
+            ko build --bare --sbom=none -t edge -t latest -t "$version" -t "$minor" -t "$major" ./cmd/syncthing-configd
+          else
+            ko build --bare --sbom=none -t edge ./cmd/syncthing-configd
+          fi
+        env:
+          KO_DOCKER_REPO: ghcr.io/kastelo/syncthing-configd
