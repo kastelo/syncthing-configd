@@ -44,8 +44,8 @@ jobs:
           short=$(git describe --tags --abbrev=0)
           export version="${descr#v}"
           if [[ $descr == $short ]]; then
-            minor="${v#*.}"
-            major="${v%%.*}"
+            minor="${version#*.}"
+            major="${version%%.*}"
             ko build --bare --sbom=none -t edge -t latest -t "$version" -t "$minor" -t "$major" ./cmd/syncthing-configd
           else
             ko build --bare --sbom=none -t edge ./cmd/syncthing-configd
