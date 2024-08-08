@@ -108,11 +108,6 @@ garbage_collect {
 
 ## Installation
 
-### Debian Package
-
-A Debian package is available as the artifact of the latest [build
-run](https://github.com/kastelo/syncthing-configd/actions/workflows/build.yml).
-
 ### Docker Image
 
 It's easiest to use the precompiled Docker image. Assuming a configuration file in

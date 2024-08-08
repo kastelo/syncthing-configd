@@ -24,21 +24,3 @@ build-linux-arm64:
 proto:
 	@clang-format -i proto/*.proto
 	@protoc --go_out=. --go_opt module=kastelo.dev/syncthing-configd proto/*.proto
-
-.PHONY: debian
-debian: build-linux-amd64
-	@fpm -s dir -t deb \
-		-p syncthing-configd-${version}-amd64.deb \
-		--name syncthing-configd \
-		--license mpl2 \
-		--version ${version} \
-		--architecture amd64 \
-		--description "Syncthing Configuration Daemon" \
-		--url "https://syncthing.net/" \
-		--maintainer "Kastelo AB <support@kastelo.net>" \
-		bin/syncthing-configd-linux-amd64=/usr/sbin/syncthing-configd \
-		etc/configd.conf.sample=/etc/syncthing-configd/configd.conf.sample \
-		etc/syncthing-configd.service=/lib/systemd/system/syncthing-configd.service \
-		etc/default-env=/etc/default/syncthing-configd \
-		README.md=/usr/share/doc/syncthing-configd/README.md \
-		LICENSE=/usr/share/doc/syncthing-configd/LICENSE
