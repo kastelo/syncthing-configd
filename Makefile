@@ -9,17 +9,6 @@ install: test
 test:
 	@go test ./...
 
-.PHONY: build
-build: test build-linux-amd64 build-linux-arm64
-
-build-linux-amd64:
-	@mkdir -p bin
-	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -ldflags $(ldflags) -o bin/syncthing-configd-linux-amd64 ./cmd/syncthing-configd
-
-build-linux-arm64:
-	@mkdir -p bin
-	@GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -v -ldflags $(ldflags) -o bin/syncthing-configd-linux-arm64 ./cmd/syncthing-configd
-
 .PHONY: proto
 proto:
 	@clang-format -i proto/*.proto
