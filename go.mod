@@ -6,7 +6,7 @@ toolchain go1.22.5
 
 require (
 	github.com/alecthomas/kong v0.9.0
-	github.com/go-resty/resty/v2 v2.14.0
+	github.com/go-resty/resty/v2 v2.15.3
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
 	github.com/syncthing/syncthing v1.27.10
